@@ -1,0 +1,9 @@
+eth:
+  rpc: "https://test.ethereum.org"
+  locking_pool_address: "0x8308918Ff3D37B94d82c83ec8f58fFe7bCA2b904"
+  locking_info_address: "0x5f1bd39614d18017b9f4ac3B2bFa34cA4BaCd08A"
+
+metis:
+  rpc: "http://example-metis.com"
+  themis_rest: "http://example-themis.com"
+  seq_set_address: "0x06C6c78E1d5b6278C54F1AA0A9C1a524B4143ef6"
