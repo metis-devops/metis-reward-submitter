@@ -12,7 +12,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient/gethclient"
-	"github.com/metisprotocol/metis-seq-reward-submitter/internal/utils"
+	"github.com/metisprotocol/metis-peripheral/internal/utils"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -115,26 +115,6 @@ func (s *Submitter) QueryAndBuildBatchInput(basectx context.Context, batchId, st
 			epoch, err := s.SequencerSet.Epochs(opt, new(big.Int).SetUint64(i))
 			if err != nil {
 				return err
-			}
-			span, err := s.ThemisClient.GetEpochByID(egctx, int64(i))
-			if err != nil {
-				return err
-			}
-
-			if len(span.Producers) != 1 {
-				return fmt.Errorf("span %d doesn't have a producer", i)
-			}
-
-			if restSigner := span.Producers[0].Signer; restSigner.Cmp(epoch.Signer) != 0 {
-				return fmt.Errorf("signer of the span %d mismatch l2=%s themis=%s", i, epoch.Signer, restSigner)
-			}
-
-			if startBlock := epoch.StartBlock.Uint64(); startBlock != span.StartBlock {
-				return fmt.Errorf("startBlock of the span %d mismatch l2=%d themis=%d", i, startBlock, span.StartBlock)
-			}
-
-			if endBlock := epoch.EndBlock.Uint64(); endBlock != span.EndBlock {
-				return fmt.Errorf("endBlock of the span %d mismatch l2=%d themis=%d", i, endBlock, span.EndBlock)
 			}
 
 			lock.Lock()

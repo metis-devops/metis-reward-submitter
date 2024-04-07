@@ -1,4 +1,4 @@
-module github.com/metisprotocol/metis-seq-reward-submitter
+module github.com/metisprotocol/metis-peripheral
 
 go 1.22.0
 

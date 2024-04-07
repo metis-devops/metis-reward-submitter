@@ -1,0 +1,11 @@
+name: metis-peripheral
+
+services:
+  peripheral:
+    image: metisdao/peripheral:${VERSION:-dev}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      platforms:
+        - linux/arm64
+        - linux/amd64

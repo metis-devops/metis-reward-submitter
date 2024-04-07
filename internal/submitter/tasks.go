@@ -11,8 +11,8 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/google/uuid"
-	"github.com/metisprotocol/metis-seq-reward-submitter/internal/themis"
-	"github.com/metisprotocol/metis-seq-reward-submitter/internal/utils"
+	"github.com/metisprotocol/metis-peripheral/internal/themis"
+	"github.com/metisprotocol/metis-peripheral/internal/utils"
 )
 
 func (s *Submitter) newBatch(basectx context.Context) (bool, error) {
@@ -164,8 +164,8 @@ func (s *Submitter) withSignature(basectx context.Context) (bool, error) {
 	newctx, cancel := context.WithTimeout(basectx, time.Second*15)
 	defer cancel()
 
-	if time.Since(s.state.UpdatedAt) > time.Minute*10 {
-		slog.Warn("Discard due to no new signatgures for long", "signId", s.state.SignId, "batch", s.state.BatchId)
+	if time.Since(s.state.UpdatedAt) > time.Minute*3 {
+		slog.Warn("Discard due to no new signatgure for long", "signId", s.state.SignId, "batch", s.state.BatchId)
 		s.state.Status = StatusIdle
 		s.state.UpdatedAt = time.Now()
 		if err := s.saveState(); err != nil {

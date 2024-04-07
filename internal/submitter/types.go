@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/metisprotocol/metis-seq-reward-submitter/internal/utils"
+	"github.com/metisprotocol/metis-peripheral/internal/utils"
 )
 
 type ChainState struct {

@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/metisprotocol/metis-seq-reward-submitter/internal/config"
-	"github.com/metisprotocol/metis-seq-reward-submitter/internal/submitter"
+	"github.com/metisprotocol/metis-peripheral/internal/config"
+	"github.com/metisprotocol/metis-peripheral/internal/submitter"
 )
 
 func main() {
