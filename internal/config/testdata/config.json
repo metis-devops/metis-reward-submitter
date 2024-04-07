@@ -1,0 +1,12 @@
+{
+  "eth": {
+    "rpc": "http://eth.example.com",
+    "locking_pool_address": "0x293E8b379FD574ec5f64013307359ff2863C1bEC",
+    "locking_info_address": "0x9F8f709002907cd1D734d16632a18F5E5735d8DC"
+  },
+  "metis": {
+    "rpc": "https://test.metis.io",
+    "themis_rest": "https://rest.metis.io",
+    "seq_set_address": "0x2F5F158996dab39cfD35f580e6f4547FDF159D1d"
+  }
+}
