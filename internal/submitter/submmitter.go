@@ -40,6 +40,7 @@ type Submitter struct {
 	EthClient    *ethclient.Client
 	MetisClient  *ethclient.Client
 	ThemisClient *themis.Client
+	Metric       *Metrics
 
 	// contract instances
 	SequencerSet *sequencerset.Sequencerset
@@ -66,7 +67,7 @@ type Params struct {
 	SeqSetAddress       common.Address
 }
 
-func New(basectx context.Context, conf *config.Config) (*Submitter, error) {
+func New(basectx context.Context, metric *Metrics, conf *config.Config) (*Submitter, error) {
 	newctx, cancel := context.WithTimeout(basectx, time.Minute)
 	defer cancel()
 
@@ -158,6 +159,7 @@ func New(basectx context.Context, conf *config.Config) (*Submitter, error) {
 		LockingPool:  lockingPool,
 		LockingInfo:  lockingInfo,
 		MetisToken:   metisToken,
+		Metric:       metric,
 		params: &Params{
 			StatePath:           conf.Submitter.StatePath,
 			MinEpochLen:         conf.Submitter.Params.MinEpochLen,
@@ -188,6 +190,7 @@ func (s *Submitter) Start(basectx context.Context) {
 			case StatusIdle, StatusConfirmed:
 				done, err := s.newBatch(basectx)
 				if err != nil {
+					s.Metric.Errors.Inc()
 					slog.Error("newBatch", "err", err)
 				}
 				if done {
@@ -198,6 +201,7 @@ func (s *Submitter) Start(basectx context.Context) {
 			case StatusUnsigned:
 				done, err := s.withSignature(basectx)
 				if err != nil {
+					s.Metric.Errors.Inc()
 					slog.Error("withSignature", "err", err)
 				}
 				if done {
@@ -208,6 +212,7 @@ func (s *Submitter) Start(basectx context.Context) {
 			case StatusSigned:
 				done, err := s.submitTx(basectx)
 				if err != nil {
+					s.Metric.Errors.Inc()
 					slog.Error("sendTransaction", "err", err)
 				}
 				if done {
@@ -218,6 +223,7 @@ func (s *Submitter) Start(basectx context.Context) {
 			case StatusSubmitted:
 				done, err := s.checkTx(basectx)
 				if err != nil {
+					s.Metric.Errors.Inc()
 					slog.Error("checkTx", "err", err)
 				}
 				if done {

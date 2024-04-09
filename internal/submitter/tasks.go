@@ -13,6 +13,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/metisprotocol/metis-peripheral/internal/themis"
 	"github.com/metisprotocol/metis-peripheral/internal/utils"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 func (s *Submitter) newBatch(basectx context.Context) (bool, error) {
@@ -70,9 +71,16 @@ func (s *Submitter) newBatch(basectx context.Context) (bool, error) {
 	slog.Debug("Batch", "data", utils.JsonString(batchInfo), "blocks", batchBlocks)
 	// calculate total totalReward and check if the payer has enough Metis to pay
 	totalReward := new(big.Int).Mul(batchBlocks, state.RewardPerBlock)
-	if !state.CanSubmit(totalReward) {
-		return false, fmt.Errorf("payer %s can't pay reward amount=%f payerBalance=%f payerAllowance=%f", state.PayerAddress,
-			utils.ToEther(totalReward), utils.ToEther(state.PayerBalance), utils.ToEther(state.PayerAllowance))
+	if !state.PayerHasSufficientBalance(totalReward) {
+		s.Metric.Insufficience.With(prometheus.Labels{"alias": "payer", "address": state.PayerAddress.Hex(), "type": "balance"}).Set(1)
+		return false, fmt.Errorf("payer %s can't pay reward amount=%f payerBalance=%f", state.PayerAddress,
+			utils.ToEther(totalReward), utils.ToEther(state.PayerBalance))
+	}
+
+	if !state.PayerHasSufficientAllowlance(totalReward) {
+		s.Metric.Insufficience.With(prometheus.Labels{"alias": "payer", "address": state.PayerAddress.Hex(), "type": "allowlance"}).Set(1)
+		return false, fmt.Errorf("payer %s can't pay reward amount=%f payerAllowlance=%f", state.PayerAddress,
+			utils.ToEther(totalReward), utils.ToEther(state.PayerAllowance))
 	}
 
 	// calculate tx input
@@ -88,8 +96,8 @@ func (s *Submitter) newBatch(basectx context.Context) (bool, error) {
 	}
 
 	if gasPriceCap.Cmp(s.params.GasPriceLimit) > 0 {
-		return false, fmt.Errorf("gas price %f exceed limit %f",
-			utils.ToGWei(gasPriceCap), utils.ToGWei(s.params.GasPriceLimit))
+		slog.Warn("gas price exceed limit", "estimate", utils.ToGWei(gasPriceCap), "limit", utils.ToGWei(s.params.GasPriceLimit))
+		return false, nil
 	}
 
 	// get gas limit
@@ -115,6 +123,7 @@ func (s *Submitter) newBatch(basectx context.Context) (bool, error) {
 
 	gasFee := new(big.Int).Mul(tx.GasPrice(), new(big.Int).SetUint64(gasLimit))
 	if gasFee.Cmp(state.MpcBalance) > 0 {
+		s.Metric.Insufficience.With(prometheus.Labels{"alias": "mpc", "address": state.MpcAddress.Hex(), "type": "balance"}).Set(1)
 		return false, fmt.Errorf("mpc eth balance %f is not enough to pay gas fee %f",
 			utils.ToEther(state.MpcBalance), utils.ToEther(gasFee))
 	}

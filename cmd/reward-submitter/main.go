@@ -4,11 +4,14 @@ import (
 	"context"
 	"flag"
 	"log/slog"
+	"net/http"
 	"os/signal"
 	"syscall"
 
 	"github.com/metisprotocol/metis-peripheral/internal/config"
 	"github.com/metisprotocol/metis-peripheral/internal/submitter"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
@@ -35,7 +38,16 @@ func main() {
 		return
 	}
 
-	srv, err := submitter.New(basectx, conf)
+	reg := prometheus.NewRegistry()
+	metric := submitter.NewMetrics(reg)
+
+	go func() {
+		server := &http.Server{Addr: ":9090"}
+		http.Handle("/metrics", promhttp.HandlerFor(reg, promhttp.HandlerOpts{Registry: reg}))
+		_ = server.ListenAndServe()
+	}()
+
+	srv, err := submitter.New(basectx, metric, conf)
 	if err != nil {
 		slog.Error("failed to init submitter", "err", err)
 	}

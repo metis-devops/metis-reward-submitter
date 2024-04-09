@@ -28,18 +28,20 @@ jobs:
         with:
           username: metisdao
           password: ${{ secrets.DOCKER_ACCESS_KEY  }}
-      - name: Docker meta
-        id: docker-meta
+
+      - name: Docker meta for reward submitter
+        id: docker-meta-reward-submitter
         uses: docker/metadata-action@v5
         with:
-          images: metisdao/peripheral
+          images: metisdao/reward-submitter
 
       - name: Build and push
         uses: docker/build-push-action@v5
         timeout-minutes: 10
         with:
           push: true
-          tags: ${{ steps.docker-meta.outputs.tags }}
+          tags: ${{ steps.docker-meta-reward-submitter.outputs.tags }}
+          target: reward-submitter
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/amd64
