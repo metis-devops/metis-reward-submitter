@@ -27,7 +27,7 @@ func (s *ChainState) ShouldSubmit(minLen uint64, minInterval time.Duration) bool
 }
 
 func (s *ChainState) IsPayerInited() bool {
-	return !utils.IsZeroAddress(s.MpcAddress)
+	return !utils.IsZeroAddress(s.PayerAddress)
 }
 
 func (s *ChainState) IsMpcInited(a common.Address) bool {

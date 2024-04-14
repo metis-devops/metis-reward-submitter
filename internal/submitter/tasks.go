@@ -50,7 +50,8 @@ func (s *Submitter) newBatch(basectx context.Context) (bool, error) {
 
 	// check if the payer is setted
 	if !state.IsPayerInited() {
-		return false, fmt.Errorf("payer %s is not initlized", state.PayerAddress)
+		slog.Warn("payer is not initlized")
+		return false, nil
 	}
 
 	slog.Info("Batch proposal",
@@ -75,12 +76,16 @@ func (s *Submitter) newBatch(basectx context.Context) (bool, error) {
 		s.Metric.Insufficience.With(prometheus.Labels{"alias": "payer", "address": state.PayerAddress.Hex(), "type": "balance"}).Set(1)
 		return false, fmt.Errorf("payer %s can't pay reward amount=%f payerBalance=%f", state.PayerAddress,
 			utils.ToEther(totalReward), utils.ToEther(state.PayerBalance))
+	} else {
+		s.Metric.Insufficience.With(prometheus.Labels{"alias": "payer", "address": state.PayerAddress.Hex(), "type": "balance"}).Set(0)
 	}
 
 	if !state.PayerHasSufficientAllowlance(totalReward) {
 		s.Metric.Insufficience.With(prometheus.Labels{"alias": "payer", "address": state.PayerAddress.Hex(), "type": "allowlance"}).Set(1)
 		return false, fmt.Errorf("payer %s can't pay reward amount=%f payerAllowlance=%f", state.PayerAddress,
 			utils.ToEther(totalReward), utils.ToEther(state.PayerAllowance))
+	} else {
+		s.Metric.Insufficience.With(prometheus.Labels{"alias": "payer", "address": state.PayerAddress.Hex(), "type": "allowlance"}).Set(0)
 	}
 
 	// calculate tx input
@@ -126,6 +131,8 @@ func (s *Submitter) newBatch(basectx context.Context) (bool, error) {
 		s.Metric.Insufficience.With(prometheus.Labels{"alias": "mpc", "address": state.MpcAddress.Hex(), "type": "balance"}).Set(1)
 		return false, fmt.Errorf("mpc eth balance %f is not enough to pay gas fee %f",
 			utils.ToEther(state.MpcBalance), utils.ToEther(gasFee))
+	} else {
+		s.Metric.Insufficience.With(prometheus.Labels{"alias": "mpc", "address": state.MpcAddress.Hex(), "type": "balance"}).Set(0)
 	}
 
 	// request signature from mpc
