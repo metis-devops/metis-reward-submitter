@@ -3,7 +3,7 @@ module github.com/metisprotocol/metis-reward-submitter
 go 1.22.0
 
 require (
-	github.com/ethereum/go-ethereum v1.13.14
+	github.com/ethereum/go-ethereum v1.13.15
 	github.com/google/uuid v1.6.0
 	github.com/prometheus/client_golang v1.19.0
 	github.com/shopspring/decimal v1.4.0
