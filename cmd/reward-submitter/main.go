@@ -8,8 +8,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/metisprotocol/metis-peripheral/internal/config"
-	"github.com/metisprotocol/metis-peripheral/internal/submitter"
+	"github.com/metisprotocol/metis-reward-submitter/internal/config"
+	"github.com/metisprotocol/metis-reward-submitter/internal/submitter"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )

@@ -11,8 +11,8 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/google/uuid"
-	"github.com/metisprotocol/metis-peripheral/internal/themis"
-	"github.com/metisprotocol/metis-peripheral/internal/utils"
+	"github.com/metisprotocol/metis-reward-submitter/internal/themis"
+	"github.com/metisprotocol/metis-reward-submitter/internal/utils"
 	"github.com/prometheus/client_golang/prometheus"
 )
 

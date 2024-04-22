@@ -12,7 +12,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient/gethclient"
-	"github.com/metisprotocol/metis-peripheral/internal/utils"
+	"github.com/metisprotocol/metis-reward-submitter/internal/utils"
 	"golang.org/x/sync/errgroup"
 )
 

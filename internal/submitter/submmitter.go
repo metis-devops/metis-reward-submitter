@@ -13,12 +13,12 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/params"
-	"github.com/metisprotocol/metis-peripheral/internal/config"
-	"github.com/metisprotocol/metis-peripheral/internal/contracts/erc20"
-	"github.com/metisprotocol/metis-peripheral/internal/contracts/lockinginfo"
-	"github.com/metisprotocol/metis-peripheral/internal/contracts/lockingpool"
-	"github.com/metisprotocol/metis-peripheral/internal/contracts/sequencerset"
-	"github.com/metisprotocol/metis-peripheral/internal/themis"
+	"github.com/metisprotocol/metis-reward-submitter/internal/config"
+	"github.com/metisprotocol/metis-reward-submitter/internal/contracts/erc20"
+	"github.com/metisprotocol/metis-reward-submitter/internal/contracts/lockinginfo"
+	"github.com/metisprotocol/metis-reward-submitter/internal/contracts/lockingpool"
+	"github.com/metisprotocol/metis-reward-submitter/internal/contracts/sequencerset"
+	"github.com/metisprotocol/metis-reward-submitter/internal/themis"
 )
 
 /*

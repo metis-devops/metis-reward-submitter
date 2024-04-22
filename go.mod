@@ -1,4 +1,4 @@
-module github.com/metisprotocol/metis-peripheral
+module github.com/metisprotocol/metis-reward-submitter
 
 go 1.22.0
 
