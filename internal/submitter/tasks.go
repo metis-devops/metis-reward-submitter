@@ -26,6 +26,10 @@ func (s *Submitter) newBatch(basectx context.Context) (bool, error) {
 		return false, err
 	}
 
+	if state == nil {
+		return false, nil
+	}
+
 	if !state.ShouldSubmit(s.params.MinEpochLen, s.params.MinInterval) {
 		slog.Debug("No need to submmit new batch",
 			"finalizedEpoch", state.FinalizedEpoch,

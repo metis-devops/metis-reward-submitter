@@ -3,6 +3,7 @@ package submitter
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math/big"
 	"sync"
 	"time"
@@ -17,43 +18,54 @@ import (
 )
 
 func (s *Submitter) QueryChainState(basectx context.Context) (*ChainState, error) {
-	newctx, cancle := context.WithTimeout(basectx, time.Second*10)
+	newctx, cancle := context.WithTimeout(basectx, time.Second*30)
 	defer cancle()
 
 	opts := &bind.CallOpts{Context: newctx}
 
-	finallized, err := s.SequencerSet.FinalizedEpoch(opts)
+	finalized, err := s.SequencerSet.FinalizedEpoch(opts)
 	if err != nil {
 		return nil, err
 	}
 
-	if !finallized.Exist {
-		return nil, fmt.Errorf("No finallized epoch found")
+	if !finalized.Exist {
+		slog.Warn("No finalized epoch found")
+		return nil, nil
+	}
+
+	metisTip, err := s.MetisClient.HeaderByNumber(newctx, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get metis latest block: %w", err)
+	}
+
+	if fEnd, tNum := finalized.Epoch.EndBlock.Uint64(), metisTip.Number.Uint64(); tNum < fEnd+180 {
+		slog.Warn("wait for 180 block confirmation number for finilized epoch")
+		return nil, nil
 	}
 
 	batch, err := s.LockingPool.CurBatchState(opts)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get current batch state: %w", err)
 	}
 
 	rewardPerBlock, err := s.LockingPool.BLOCKREWARD(opts)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get current reward per block: %w", err)
 	}
 
-	block, err := s.EthClient.HeaderByNumber(basectx, batch.Number)
+	ethBlock, err := s.EthClient.HeaderByNumber(basectx, batch.Number)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get reward batch: %w", err)
 	}
 
 	payer, err := s.LockingInfo.RewardPayer(opts)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get reward payer: %w", err)
 	}
 
 	mpcAddress, err := s.LockingPool.MpcAddress(opts)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get mpc address: %w", err)
 	}
 
 	var mpcBalance = new(big.Int)
@@ -84,10 +96,10 @@ func (s *Submitter) QueryChainState(basectx context.Context) (*ChainState, error
 	}
 
 	return &ChainState{
-		FinalizedEpoch:    finallized.Epoch.Number.Uint64(),
+		FinalizedEpoch:    finalized.Epoch.Number.Uint64(),
 		LastBatchId:       batch.Id.Uint64(),
 		LastBatchEndEpoch: batch.EndEpoch.Uint64(),
-		LastBatchTime:     time.Unix(int64(block.Time), 0),
+		LastBatchTime:     time.Unix(int64(ethBlock.Time), 0),
 		MpcAddress:        mpcAddress,
 		MpcBalance:        mpcBalance,
 		MpcNonce:          mpcNonce,

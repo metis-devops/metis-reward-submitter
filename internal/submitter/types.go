@@ -23,7 +23,7 @@ type ChainState struct {
 }
 
 func (s *ChainState) ShouldSubmit(minLen uint64, minInterval time.Duration) bool {
-	return (s.FinalizedEpoch > s.LastBatchEndEpoch+minLen) && time.Since(s.LastBatchTime) > minInterval
+	return s.FinalizedEpoch > s.LastBatchEndEpoch+minLen && time.Since(s.LastBatchTime) > minInterval
 }
 
 func (s *ChainState) IsPayerInited() bool {
