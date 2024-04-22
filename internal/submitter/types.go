@@ -35,7 +35,7 @@ func (s *ChainState) IsMpcInited(a common.Address) bool {
 }
 
 func (s *ChainState) CanSubmit(reward *big.Int) bool {
-	return s.PayerBalance.Cmp(reward) >= 0 && s.PayerAllowance.Cmp(reward) >= 0
+	return s.PayerHasSufficientAllowlance(reward) && s.PayerHasSufficientBalance(reward)
 }
 
 func (s *ChainState) PayerHasSufficientBalance(reward *big.Int) bool {

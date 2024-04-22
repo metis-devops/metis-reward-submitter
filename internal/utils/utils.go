@@ -9,7 +9,7 @@ import (
 )
 
 func IsZeroAddress(addr common.Address) bool {
-	for i := range addr {
+	for _, i := range addr {
 		if i != 0 {
 			return false
 		}
