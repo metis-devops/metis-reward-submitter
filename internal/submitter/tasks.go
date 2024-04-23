@@ -23,7 +23,7 @@ func (s *Submitter) newBatch(basectx context.Context) (bool, error) {
 	// get current batch and epoch info
 	state, err := s.QueryChainState(newctx)
 	if err != nil {
-		return false, err
+		return false, fmt.Errorf("query chain state: %w", err)
 	}
 
 	if state == nil {

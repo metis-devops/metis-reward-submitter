@@ -192,11 +192,13 @@ func (s *Submitter) Start(basectx context.Context) {
 				if err != nil {
 					s.Metric.Errors.Inc()
 					slog.Error("newBatch", "err", err)
+					timer.Reset(time.Minute)
+					continue
 				}
 				if done {
 					timer.Reset(time.Second * 5)
 				} else {
-					timer.Reset(time.Minute)
+					timer.Reset(time.Minute * 10)
 				}
 			case StatusUnsigned:
 				done, err := s.withSignature(basectx)
@@ -210,16 +212,12 @@ func (s *Submitter) Start(basectx context.Context) {
 					timer.Reset(time.Second * 5)
 				}
 			case StatusSigned:
-				done, err := s.submitTx(basectx)
+				_, err := s.submitTx(basectx)
 				if err != nil {
 					s.Metric.Errors.Inc()
-					slog.Error("sendTransaction", "err", err)
+					slog.Error("submitTx", "err", err)
 				}
-				if done {
-					timer.Reset(time.Second * 5)
-				} else {
-					timer.Reset(time.Second)
-				}
+				timer.Reset(time.Second * 10)
 			case StatusSubmitted:
 				done, err := s.checkTx(basectx)
 				if err != nil {

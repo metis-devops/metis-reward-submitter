@@ -29,7 +29,7 @@ func (s *Submitter) QueryChainState(basectx context.Context) (*ChainState, error
 	}
 
 	if !finalized.Exist {
-		slog.Warn("No finalized epoch found")
+		slog.Debug("No finalized epoch found")
 		return nil, nil
 	}
 
@@ -39,7 +39,7 @@ func (s *Submitter) QueryChainState(basectx context.Context) (*ChainState, error
 	}
 
 	if fEnd, tNum := finalized.Epoch.EndBlock.Uint64(), metisTip.Number.Uint64(); tNum < fEnd+180 {
-		slog.Warn("wait for 180 block confirmation number for finilized epoch")
+		slog.Debug("wait for 180 block confirmation number for finilized epoch")
 		return nil, nil
 	}
 
