@@ -8,15 +8,17 @@ import (
 
 type Eth struct {
 	RPC          string         `json:"rpc" yaml:"rpc"`
+	ChainId      uint64         `json:"chain_id" yaml:"chain_id"`
 	LockingPool  common.Address `json:"locking_pool_address" yaml:"locking_pool_address"`
 	LockcingInfo common.Address `json:"locking_info_address" yaml:"locking_info_address"`
 	MetisToken   common.Address `json:"metis_token_address" yaml:"metis_token_address"`
 }
 
 type Metis struct {
-	RPC    string         `json:"rpc" yaml:"rpc"`
-	Themis string         `json:"themis_rest" yaml:"themis_rest"`
-	SeqSet common.Address `json:"seq_set_address" yaml:"seq_set_address"`
+	RPC     string         `json:"rpc" yaml:"rpc"`
+	ChainId uint64         `json:"chain_id" yaml:"chain_id"`
+	Themis  string         `json:"themis_rest" yaml:"themis_rest"`
+	SeqSet  common.Address `json:"seq_set_address" yaml:"seq_set_address"`
 }
 
 type Submitter struct {

@@ -82,6 +82,10 @@ func New(basectx context.Context, metric *Metrics, conf *config.Config) (*Submit
 		return nil, err
 	}
 
+	if v := ethChainId.Uint64(); v != conf.Eth.ChainId {
+		return nil, fmt.Errorf("mismatch eth chain id, expected %d got %d", conf.Metis.ChainId, v)
+	}
+
 	slog.Info("Init LockingPool instance", "address", conf.Eth.LockingPool)
 	lockingPool, err := lockingpool.NewLockingpool(conf.Eth.LockingPool, ethClient)
 	if err != nil {
@@ -109,6 +113,10 @@ func New(basectx context.Context, metric *Metrics, conf *config.Config) (*Submit
 	metisChainId, err := metisClient.ChainID(newctx)
 	if err != nil {
 		return nil, err
+	}
+
+	if v := metisChainId.Uint64(); v != conf.Metis.ChainId {
+		return nil, fmt.Errorf("mismatch metis chain id, expected %d got %d", conf.Metis.ChainId, v)
 	}
 
 	slog.Info("chainId", "eth", ethChainId, "metis", metisChainId)
