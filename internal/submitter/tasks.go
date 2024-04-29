@@ -263,8 +263,8 @@ func (s *Submitter) checkTx(basectx context.Context) (bool, error) {
 			return false, fmt.Errorf("failed to get latest block: %w", err)
 		}
 
-		confirmationNumber := new(big.Int).Sub(latest.Number, receipt.BlockNumber).Uint64() + 1
-		slog.Debug("confiirmation", "block", latest.Number, "number", confirmationNumber)
+		confirmationNumber := new(big.Int).Sub(latest.Number, receipt.BlockNumber).Int64() + 1
+		slog.Info("confiirmation", "block", latest.Number, "number", confirmationNumber)
 		// 6 confirmations number at least
 		if confirmationNumber > 5 {
 			s.state.UpdatedAt = time.Now()
