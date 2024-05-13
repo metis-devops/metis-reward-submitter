@@ -5,7 +5,7 @@ go 1.22.0
 require (
 	github.com/ethereum/go-ethereum v1.14.0
 	github.com/google/uuid v1.6.0
-	github.com/prometheus/client_golang v1.19.0
+	github.com/prometheus/client_golang v1.19.1
 	github.com/shopspring/decimal v1.4.0
 	golang.org/x/sync v0.7.0
 	gopkg.in/yaml.v3 v3.0.1
