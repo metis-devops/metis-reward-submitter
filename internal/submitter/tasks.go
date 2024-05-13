@@ -78,16 +78,16 @@ func (s *Submitter) newBatch(basectx context.Context) (bool, error) {
 	totalReward := new(big.Int).Mul(batchBlocks, state.RewardPerBlock)
 	if !state.PayerHasSufficientBalance(totalReward) {
 		s.Metric.Insufficience.With(prometheus.Labels{"alias": "payer", "address": state.PayerAddress.Hex(), "type": "balance"}).Set(1)
-		return false, fmt.Errorf("payer %s can't pay reward amount=%f payerBalance=%f", state.PayerAddress,
-			utils.ToEther(totalReward), utils.ToEther(state.PayerBalance))
+		slog.Error("balance of payer is insufficient to pay the reward", "payer", state.PayerAddress, "amount", utils.ToEther(totalReward), "balance", utils.ToEther(state.PayerBalance))
+		return false, nil
 	} else {
 		s.Metric.Insufficience.With(prometheus.Labels{"alias": "payer", "address": state.PayerAddress.Hex(), "type": "balance"}).Set(0)
 	}
 
 	if !state.PayerHasSufficientAllowlance(totalReward) {
 		s.Metric.Insufficience.With(prometheus.Labels{"alias": "payer", "address": state.PayerAddress.Hex(), "type": "allowlance"}).Set(1)
-		return false, fmt.Errorf("payer %s can't pay reward amount=%f payerAllowlance=%f", state.PayerAddress,
-			utils.ToEther(totalReward), utils.ToEther(state.PayerAllowance))
+		slog.Error("allowlance of payer is insufficient to pay the reward", "payer", state.PayerAddress, "amount", utils.ToEther(totalReward), "allowlance", utils.ToEther(state.PayerAllowance))
+		return false, nil
 	} else {
 		s.Metric.Insufficience.With(prometheus.Labels{"alias": "payer", "address": state.PayerAddress.Hex(), "type": "allowlance"}).Set(0)
 	}
