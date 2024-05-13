@@ -35,10 +35,20 @@ type ResponseWithHeight struct {
 	Result json.RawMessage `json:"result"`
 }
 
-// ErrorResponse defines the attributes of a JSON error response
-type ErrorResponse struct {
-	Code  int    `json:"code,omitempty"`
-	Error string `json:"error"`
+// ClientError defines the attributes of a JSON error response
+type ClientError struct {
+	Path     string `json:"-"`
+	HttpCode int    `json:"-"`
+	Code     int    `json:"code,omitempty"`
+	Err      string `json:"error"`
+}
+
+func (e ClientError) Error() string {
+	return e.Err
+}
+
+func (e ClientError) NotFound() bool {
+	return e.HttpCode == http.StatusNotFound
 }
 
 func (c *Client) Get(ctx context.Context, path string, result any) error {
@@ -65,12 +75,14 @@ func (c *Client) Get(ctx context.Context, path string, result any) error {
 		return nil
 	}
 
-	var data ErrorResponse
-	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+	var cerror ClientError
+	if err := json.NewDecoder(resp.Body).Decode(&cerror); err != nil {
 		return err
 	}
 
-	return fmt.Errorf("rest client error: path %s code %d msg %s", path, data.Code, data.Error)
+	cerror.Path = path
+	cerror.HttpCode = resp.StatusCode
+	return cerror
 }
 
 func (c *Client) Post(ctx context.Context, path string, req, result any) error {
@@ -99,10 +111,11 @@ func (c *Client) Post(ctx context.Context, path string, req, result any) error {
 		return nil
 	}
 
-	var data ErrorResponse
-	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+	var cerror ClientError
+	if err := json.NewDecoder(resp.Body).Decode(&cerror); err != nil {
 		return err
 	}
-
-	return fmt.Errorf("rest client error: path %s code %d msg %s", path, data.Code, data.Error)
+	cerror.Path = path
+	cerror.HttpCode = resp.StatusCode
+	return cerror
 }

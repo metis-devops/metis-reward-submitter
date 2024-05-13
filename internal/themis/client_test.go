@@ -3,6 +3,8 @@ package themis
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -49,7 +51,7 @@ func TestClient_Get(t *testing.T) {
 				if tt.wantErr {
 					w.WriteHeader(http.StatusBadRequest)
 					w.Header().Add("content-type", "application/json")
-					_ = json.NewEncoder(w).Encode(&ErrorResponse{Error: "error"})
+					_ = json.NewEncoder(w).Encode(&ClientError{Err: "error"})
 				} else {
 					result, _ := json.Marshal(tt.args.result)
 					_ = json.NewEncoder(w).Encode(&ResponseWithHeight{Result: result})
@@ -135,7 +137,7 @@ func TestClient_Post(t *testing.T) {
 
 				if tt.wantErr {
 					w.WriteHeader(http.StatusBadRequest)
-					_ = json.NewEncoder(w).Encode(&ErrorResponse{Error: "error"})
+					_ = json.NewEncoder(w).Encode(&ClientError{Err: "error"})
 				} else {
 					_ = json.NewEncoder(w).Encode(tt.args.result)
 				}
@@ -191,5 +193,23 @@ func TestNewClient(t *testing.T) {
 				t.Errorf("NewClient() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestClientError_NotFound(t *testing.T) {
+	e := ClientError{
+		Path:     "/test",
+		HttpCode: http.StatusNotFound,
+		Code:     0,
+		Err:      "not found",
+	}
+
+	var target ClientError
+	if !errors.As(fmt.Errorf("the error: %w", e), &target) {
+		t.Fatal("should be ClientError")
+	}
+
+	if !target.NotFound() {
+		t.Fatal("should be NotFound")
 	}
 }

@@ -5,6 +5,7 @@ import "github.com/prometheus/client_golang/prometheus"
 type Metrics struct {
 	Insufficience *prometheus.GaugeVec
 	Errors        prometheus.Counter
+	MpcErrs       prometheus.Counter
 }
 
 func NewMetrics(reg prometheus.Registerer) *Metrics {
@@ -20,7 +21,15 @@ func NewMetrics(reg prometheus.Registerer) *Metrics {
 		},
 	)
 
+	mpcErrors := prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "metis:srs:mpc:errors",
+			Help: "Number of MPC errors",
+		},
+	)
+
 	reg.MustRegister(errors)
+	reg.MustRegister(mpcErrors)
 	reg.MustRegister(insuf)
 	return &Metrics{Insufficience: insuf, Errors: errors}
 }

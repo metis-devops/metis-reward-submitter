@@ -2,6 +2,7 @@ package submitter
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"math/big"
@@ -186,6 +187,8 @@ func (s *Submitter) withSignature(basectx context.Context) (bool, error) {
 
 	if time.Since(s.state.UpdatedAt) > time.Minute*3 {
 		slog.Warn("Discard due to no new signatgure for long", "signId", s.state.SignId, "batch", s.state.BatchId)
+		s.Metric.MpcErrs.Inc()
+
 		s.state.Status = StatusIdle
 		s.state.UpdatedAt = time.Now()
 		if err := s.saveState(); err != nil {
@@ -197,22 +200,29 @@ func (s *Submitter) withSignature(basectx context.Context) (bool, error) {
 	slog.Info("Try to add signature", "signId", s.state.SignId, "batch", s.state.BatchId)
 	res, err := s.ThemisClient.GetMpcSign(newctx, s.state.SignId)
 	if err != nil {
+		var notfound themis.ClientError
+		if errors.As(err, &notfound) && notfound.NotFound() {
+			slog.Warn("The sign request not found, wait for next polling", "id", s.state.SignId)
+			return false, nil
+		}
 		return false, err
 	}
 
 	// not ready
 	if len(res.Signature) == 0 {
-		slog.Info("No signature, wait for next polling")
+		slog.Warn("No signature, wait for next polling", "id", s.state.SignId)
 		return false, nil
 	}
 
 	slog.Debug("GetMpcSign", "res", utils.JsonString(res))
 	if len(res.Signature) != 65 {
+		s.Metric.MpcErrs.Inc()
 		return false, fmt.Errorf("invalid signature: %x", res.Signature)
 	}
 
 	signed, err := s.state.Tx.WithSignature(s.params.TxHasher, res.Signature)
 	if err != nil {
+		s.Metric.MpcErrs.Inc()
 		return false, fmt.Errorf("failed to add signature to the tx: %w", err)
 	}
 

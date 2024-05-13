@@ -79,7 +79,7 @@ func TestClient_LatestMpcInfo(t *testing.T) {
 				if tt.wantErr {
 					w.WriteHeader(http.StatusBadRequest)
 					w.Header().Add("content-type", "application/json")
-					_ = json.NewEncoder(w).Encode(&ErrorResponse{Error: "error"})
+					_ = json.NewEncoder(w).Encode(&ClientError{Err: "error"})
 				} else {
 					jsonResp, err := os.Open(fmt.Sprintf("testdata/%s", tt.testdata))
 					if err != nil {
@@ -159,7 +159,7 @@ func TestClient_GetMpcSign(t *testing.T) {
 				if tt.wantErr {
 					w.WriteHeader(http.StatusBadRequest)
 					w.Header().Add("content-type", "application/json")
-					_ = json.NewEncoder(w).Encode(&ErrorResponse{Error: "error"})
+					_ = json.NewEncoder(w).Encode(&ClientError{Err: "error"})
 				} else {
 					jsonResp, err := os.Open(fmt.Sprintf("testdata/%s", tt.testdata))
 					if err != nil {
