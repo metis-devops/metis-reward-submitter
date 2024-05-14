@@ -4,11 +4,19 @@ import (
 	"flag"
 	"fmt"
 	"math/big"
+	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/metisprotocol/metis-reward-submitter/internal/contracts/sequencerset"
 )
+
+type Epoch struct {
+	Number uint64
+	Start  uint64
+	End    uint64
+	Signer common.Address
+}
 
 func main() {
 	var (
@@ -24,30 +32,49 @@ func main() {
 	flag.Int64Var(&End, "end", 0, "end")
 	flag.Parse()
 
-	metisClient, err := ethclient.Dial(L2geth)
-	if err != nil {
-		panic(err)
-	}
+	remote := strings.Split(L2geth, ",")
 
-	seqset, err := sequencerset.NewSequencerset(common.HexToAddress(SeqSet), metisClient)
-	if err != nil {
-		panic(err)
+	if len(remote) == 0 {
+		fmt.Println("No node provided")
+		return
 	}
-
-	var blocks = make(map[common.Address]uint64)
 
 	var blockCount uint64 = 0
+	var blocks = make(map[common.Address]uint64)
 
 	for i := Start; i <= End; i++ {
-		epoch, err := seqset.Epochs(nil, big.NewInt(i))
-		if err != nil {
-			panic(err)
+		epochs := make([]Epoch, len(remote))
+
+		for idx, node := range remote {
+			metisClient, err := ethclient.Dial(node)
+			if err != nil {
+				panic(err)
+			}
+
+			seqset, err := sequencerset.NewSequencerset(common.HexToAddress(SeqSet), metisClient)
+			if err != nil {
+				panic(err)
+			}
+
+			epoch, err := seqset.Epochs(nil, big.NewInt(i))
+			if err != nil {
+				panic(err)
+			}
+
+			epochs[idx] = Epoch{Number: epoch.Number.Uint64(), Start: epoch.StartBlock.Uint64(), End: epoch.EndBlock.Uint64(), Signer: epoch.Signer}
 		}
 
-		number := epoch.EndBlock.Uint64() - epoch.StartBlock.Uint64() + 1
-		blocks[epoch.Signer] += number
-		blockCount += number
-		fmt.Println("epoch", i, "signer", epoch.Signer, "start", epoch.StartBlock, "end", epoch.EndBlock)
+		for idx, cur := range epochs {
+			if idx == 0 {
+				number := cur.End - cur.Start + 1
+				blocks[cur.Signer] += number
+				blockCount += number
+				continue
+			}
+			if pre := epochs[idx-1]; cur != pre {
+				fmt.Println("diff", "idx", idx, "cur", cur, "pre", pre)
+			}
+		}
 	}
 
 	fmt.Println()
