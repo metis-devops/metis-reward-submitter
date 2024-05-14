@@ -8,6 +8,6 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     go install ./cmd/...
 
 FROM alpine:3.19 as reward-submitter
-COPY --from=compiler /go/bin/reward-submitter /usr/local/bin/
+COPY --from=compiler /go/bin/* /usr/local/bin/
 EXPOSE 9090
 ENTRYPOINT [ "reward-submitter" ]

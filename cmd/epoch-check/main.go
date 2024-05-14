@@ -21,7 +21,7 @@ func main() {
 
 	flag.StringVar(&RestHost, "themis", "", "the themis rest url")
 	flag.StringVar(&L2geth, "l2geth", "", "the l2geth jsonrpc url")
-	flag.StringVar(&SeqSet, "seqset", "", "the seqset contract")
+	flag.StringVar(&SeqSet, "seqset", "0x0fe382b74C3894B65c10E5C12ae60Bbd8FAf5b48", "the seqset contract")
 	flag.Parse()
 
 	rest, err := themis.NewClient(RestHost)
