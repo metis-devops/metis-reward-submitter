@@ -190,6 +190,7 @@ func (s *Submitter) GetAccessList(basectx context.Context, from, to common.Addre
 	// ignore the error from CreateAccessList due to the AccessList is not required and not important
 	list, _, _, err := geth.CreateAccessList(newctx, callmsg)
 	if err != nil {
+		slog.Warn("failed to get access list", "err", err.Error())
 		list = &types.AccessList{}
 	}
 	gas, err := s.EthClient.EstimateGas(newctx, callmsg)
