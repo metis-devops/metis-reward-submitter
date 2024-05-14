@@ -31,5 +31,5 @@ func NewMetrics(reg prometheus.Registerer) *Metrics {
 	reg.MustRegister(errors)
 	reg.MustRegister(mpcErrors)
 	reg.MustRegister(insuf)
-	return &Metrics{Insufficience: insuf, Errors: errors}
+	return &Metrics{Insufficience: insuf, Errors: errors, MpcErrs: mpcErrors}
 }
