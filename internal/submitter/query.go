@@ -186,17 +186,20 @@ func (s *Submitter) GetAccessList(basectx context.Context, from, to common.Addre
 		To:   &to,
 		Data: input,
 	}
-	geth := gethclient.New(s.EthClient.Client())
-	// ignore the error from CreateAccessList due to the AccessList is not required and not important
-	list, _, _, err := geth.CreateAccessList(newctx, callmsg)
-	if err != nil {
-		slog.Warn("failed to get access list", "err", err.Error())
-		list = &types.AccessList{}
-	}
+
 	gas, err := s.EthClient.EstimateGas(newctx, callmsg)
 	if err != nil {
 		return nil, 0, err
 	}
+
+	callmsg.Gas = gas
+	list, _, _, err := gethclient.New(s.EthClient.Client()).CreateAccessList(newctx, callmsg)
+	if err != nil {
+		// ignore the error from CreateAccessList due to the AccessList is not required and not important
+		slog.Warn("failed to get access list", "err", err.Error())
+		list = &types.AccessList{}
+	}
+
 	// Add extra 21000 to prevent the out of gas error
 	return list, gas + 21000, err
 }
