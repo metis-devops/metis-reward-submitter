@@ -40,8 +40,12 @@ jobs:
         timeout-minutes: 10
         with:
           push: true
-          tags: ${{ steps.docker-meta-reward-submitter.outputs.tags }}
+          pull: true
+          context: .
+          sbom: false
+          provenance: false
           target: reward-submitter
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/amd64
+          tags: ${{ steps.docker-meta-reward-submitter.outputs.tags }}
