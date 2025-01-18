@@ -158,10 +158,11 @@ func (s *Submitter) newBatch(basectx context.Context) (bool, error) {
 		SignData: hexutil.Encode(rawTx),
 		SignMsg:  s.params.TxHasher.Hash(tx).Hex(),
 	}
-	if err := s.ThemisClient.InitSign(newctx, mpcReq); err != nil {
+	signReqTxid, err := s.ThemisClient.InitSign(newctx, mpcReq)
+	if err != nil {
 		return false, err
 	}
-	slog.Debug("Batch sign request", "batch", newBatchId,
+	slog.Debug("Batch sign request", "themisTxid", signReqTxid, "batch", newBatchId,
 		"signId", mpcReq.SignID, "signType", mpcReq.SignType, "mpcId", mpcInfo.Id, "raw", mpcReq.SignData, "msg", mpcReq.SignMsg)
 
 	s.state = &State{

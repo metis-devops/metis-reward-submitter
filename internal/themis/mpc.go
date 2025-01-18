@@ -42,12 +42,12 @@ type SignByMpcRes struct {
 	Tx string `json:"tx"`
 }
 
-func (bs *Client) InitSign(ctx context.Context, req *SignByMpcReq) error {
+func (bs *Client) InitSign(ctx context.Context, req *SignByMpcReq) (string, error) {
 	var res SignByMpcRes
 	if err := bs.Post(ctx, "/mpc/propose-mpc-sign", req, &res); err != nil {
-		return fmt.Errorf("SignByMpc: %w", err)
+		return "", fmt.Errorf("SignByMpc: %w", err)
 	}
-	return nil
+	return res.Tx, nil
 }
 
 type MpcSignResp struct {
