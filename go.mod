@@ -1,7 +1,6 @@
-module github.com/metisprotocol/metis-reward-submitter
+module github.com/metis-devops/metis-reward-submitter
 
-go 1.22.0
-toolchain go1.23.6
+go 1.24
 
 require (
 	github.com/ethereum/go-ethereum v1.15.3

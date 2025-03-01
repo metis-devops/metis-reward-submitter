@@ -7,7 +7,7 @@ import (
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/metisprotocol/metis-reward-submitter/internal/contracts/lockingpool"
+	"github.com/metis-devops/metis-reward-submitter/internal/contracts/lockingpool"
 )
 
 type TxInput struct {

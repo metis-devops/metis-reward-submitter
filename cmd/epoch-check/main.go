@@ -8,8 +8,8 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/metisprotocol/metis-reward-submitter/internal/contracts/sequencerset"
-	"github.com/metisprotocol/metis-reward-submitter/internal/themis"
+	"github.com/metis-devops/metis-reward-submitter/internal/contracts/sequencerset"
+	"github.com/metis-devops/metis-reward-submitter/internal/themis"
 )
 
 func main() {
