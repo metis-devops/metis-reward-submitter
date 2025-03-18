@@ -243,6 +243,26 @@ func (s *Submitter) submitTx(basectx context.Context) (bool, error) {
 	newctx, cancel := context.WithTimeout(basectx, time.Second*15)
 	defer cancel()
 
+	// check if the base fee is higher than current gas price
+	header, err := s.EthClient.HeaderByNumber(newctx, nil)
+	if err != nil {
+		return false, err
+	}
+
+	if header.BaseFee == nil {
+		return false, fmt.Errorf("base fee is nil")
+	}
+
+	if feeCap := s.state.Tx.GasFeeCap(); feeCap.Cmp(header.BaseFee) < 0 {
+		slog.Warn("Base fee is higher than gas price, skip", "baseFee", utils.ToGWei(header.BaseFee), "gasPrice", utils.ToGWei(feeCap))
+		s.state.Status = StatusIdle
+		s.state.UpdatedAt = time.Now()
+		if err := s.saveState(); err != nil {
+			return false, fmt.Errorf("failed to save state: %w", err)
+		}
+		return false, nil
+	}
+
 	txHash := s.state.Tx.Hash()
 	slog.Info("Sending tx", "signId", s.state.SignId, "tx", txHash)
 	if err := s.EthClient.SendTransaction(newctx, s.state.Tx); err != nil {

@@ -167,6 +167,10 @@ func (s *Submitter) GetGasParams(basectx context.Context) (tip, cap *big.Int, er
 		return nil, nil, err
 	}
 
+	if header.BaseFee == nil {
+		return nil, nil, fmt.Errorf("base fee is nil")
+	}
+
 	tip, err = s.EthClient.SuggestGasTipCap(newctx)
 	if err != nil {
 		return nil, nil, err
