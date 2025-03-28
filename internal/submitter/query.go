@@ -75,7 +75,7 @@ func (s *Submitter) QueryChainState(basectx context.Context) (*ChainState, error
 		if err != nil {
 			return nil, err
 		}
-		mpcNonce, err = s.EthClient.PendingNonceAt(opts.Context, mpcAddress)
+		mpcNonce, err = s.EthClient.NonceAt(opts.Context, mpcAddress, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -176,7 +176,7 @@ func (s *Submitter) GetGasParams(basectx context.Context) (tip, cap *big.Int, er
 		return nil, nil, err
 	}
 
-	cap = new(big.Int).Mul(header.BaseFee, common.Big2)
+	cap = new(big.Int).Mul(header.BaseFee, common.Big3)
 	cap.Add(cap, tip)
 	return
 }

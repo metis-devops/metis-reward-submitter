@@ -13,11 +13,12 @@ func _() {
 	_ = x[StatusSigned-2]
 	_ = x[StatusSubmitted-3]
 	_ = x[StatusConfirmed-4]
+	_ = x[StatusTimeout-5]
 }
 
-const _TxStatus_name = "StatusIdleStatusUnsignedStatusSignedStatusSubmittedStatusConfirmed"
+const _TxStatus_name = "StatusIdleStatusUnsignedStatusSignedStatusSubmittedStatusConfirmedStatusTimeout"
 
-var _TxStatus_index = [...]uint8{0, 10, 24, 36, 51, 66}
+var _TxStatus_index = [...]uint8{0, 10, 24, 36, 51, 66, 79}
 
 func (i TxStatus) String() string {
 	if i < 0 || i >= TxStatus(len(_TxStatus_index)-1) {

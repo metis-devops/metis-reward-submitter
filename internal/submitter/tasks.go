@@ -41,8 +41,6 @@ func (s *Submitter) newBatch(basectx context.Context) (bool, error) {
 		return false, nil
 	}
 
-	// todo: compare nonce in local cache if it's available
-
 	// get mpc info and check if the mpc address is initlized on chain
 	// if the mpc address has not created, the LatestMpcInfo will return a not found error
 	mpcInfo, err := s.ThemisClient.LatestMpcInfo(newctx, themis.RewardSubmitMpcType)
@@ -311,12 +309,15 @@ func (s *Submitter) checkTx(basectx context.Context) (bool, error) {
 
 		return false, nil
 	}
-	// todo: rbf
+
 	if err == ethereum.NotFound {
-		// try to resend the tx
-		if time.Since(s.state.UpdatedAt) > time.Minute {
-			_ = s.EthClient.SendTransaction(newctx, s.state.Tx)
+		if time.Since(s.state.UpdatedAt) > time.Hour {
+			slog.Warn("Transaction timeout, skip and build again", "tx", txHash)
 			s.state.UpdatedAt = time.Now()
+			s.state.Status = StatusTimeout
+			if err := s.saveState(); err != nil {
+				return false, fmt.Errorf("failed to save state: %w", err)
+			}
 		}
 		return false, nil
 	}

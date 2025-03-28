@@ -195,7 +195,7 @@ func (s *Submitter) Start(basectx context.Context) {
 			return
 		case <-timer.C:
 			switch s.state.Status {
-			case StatusIdle, StatusConfirmed:
+			case StatusIdle, StatusConfirmed, StatusTimeout:
 				done, err := s.newBatch(basectx)
 				if err != nil {
 					s.Metric.Errors.Inc()
@@ -237,6 +237,14 @@ func (s *Submitter) Start(basectx context.Context) {
 				} else {
 					timer.Reset(time.Second * 10)
 				}
+			default:
+				slog.Warn("Unknown state, reset to idle")
+				s.state.Status = StatusIdle
+				s.state.UpdatedAt = time.Now()
+				if err := s.saveState(); err != nil {
+					slog.Error("saveState", "err", err)
+				}
+				timer.Reset(time.Second * 10)
 			}
 		}
 	}

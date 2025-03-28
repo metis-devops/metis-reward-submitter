@@ -8,7 +8,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
-//go:generate stringer -type=TxStatus
+//go:generate go tool golang.org/x/tools/cmd/stringer -type=TxStatus
 type TxStatus int
 
 const (
@@ -17,6 +17,7 @@ const (
 	StatusSigned
 	StatusSubmitted
 	StatusConfirmed
+	StatusTimeout
 )
 
 type State struct {
@@ -83,6 +84,8 @@ func (s *State) UnmarshalJSON(data []byte) (err error) {
 		s.Status = StatusSubmitted
 	case StatusConfirmed.String():
 		s.Status = StatusConfirmed
+	case StatusTimeout.String():
+		s.Status = StatusTimeout
 	default:
 		return errors.New("invalid status")
 	}
