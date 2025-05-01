@@ -5,7 +5,7 @@ go 1.24
 require (
 	github.com/ethereum/go-ethereum v1.15.10
 	github.com/google/uuid v1.6.0
-	github.com/prometheus/client_golang v1.21.1
+	github.com/prometheus/client_golang v1.22.0
 	github.com/shopspring/decimal v1.4.0
 	golang.org/x/sync v0.13.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -31,7 +31,6 @@ require (
 	github.com/holiman/uint256 v1.3.2 // indirect
 	github.com/huin/goupnp v1.3.0 // indirect
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
-	github.com/klauspost/compress v1.18.0 // indirect
 	github.com/mmcloughlin/addchain v0.4.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/pion/dtls/v2 v2.2.12 // indirect
