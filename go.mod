@@ -3,7 +3,7 @@ module github.com/metis-devops/metis-reward-submitter
 go 1.24
 
 require (
-	github.com/ethereum/go-ethereum v1.15.10
+	github.com/ethereum/go-ethereum v1.15.11
 	github.com/google/uuid v1.6.0
 	github.com/prometheus/client_golang v1.22.0
 	github.com/shopspring/decimal v1.4.0
@@ -18,11 +18,11 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/consensys/bavard v0.1.30 // indirect
 	github.com/consensys/gnark-crypto v0.17.0 // indirect
+	github.com/crate-crypto/go-eth-kzg v1.3.0 // indirect
 	github.com/crate-crypto/go-ipa v0.0.0-20240724233137-53bbb0ceb27a // indirect
-	github.com/crate-crypto/go-kzg-4844 v1.1.0 // indirect
 	github.com/deckarep/golang-set/v2 v2.8.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.0 // indirect
-	github.com/ethereum/c-kzg-4844 v1.0.3 // indirect
+	github.com/ethereum/c-kzg-4844/v2 v2.1.0 // indirect
 	github.com/ethereum/go-verkle v0.2.2 // indirect
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
