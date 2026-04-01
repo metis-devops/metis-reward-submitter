@@ -1,13 +1,13 @@
 module github.com/metis-devops/metis-reward-submitter
 
-go 1.24.0
+go 1.25.0
 
 require (
 	github.com/ethereum/go-ethereum v1.17.0
 	github.com/google/uuid v1.6.0
 	github.com/prometheus/client_golang v1.23.2
 	github.com/shopspring/decimal v1.4.0
-	golang.org/x/sync v0.19.0
+	golang.org/x/sync v0.20.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
