@@ -181,7 +181,7 @@ func (s *Submitter) GetGasParams(basectx context.Context) (tip, cap *big.Int, er
 	return
 }
 
-func (s *Submitter) GetAccessList(basectx context.Context, from, to common.Address, input []byte) (*types.AccessList, uint64, error) {
+func (s *Submitter) GetTxParams(basectx context.Context, from, to common.Address, input []byte) (*types.AccessList, uint64, error) {
 	newctx, canel := context.WithTimeout(basectx, time.Second*5)
 	defer canel()
 
@@ -191,17 +191,17 @@ func (s *Submitter) GetAccessList(basectx context.Context, from, to common.Addre
 		Data: input,
 	}
 
-	gas, err := s.EthClient.EstimateGas(newctx, callmsg)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	callmsg.Gas = gas
 	list, _, _, err := gethclient.New(s.EthClient.Client()).CreateAccessList(newctx, callmsg)
-	if err != nil {
+	if err != nil || list == nil {
 		// ignore the error from CreateAccessList due to the AccessList is not required and not important
 		slog.Warn("failed to get access list", "err", err.Error())
 		list = &types.AccessList{}
+	}
+
+	callmsg.AccessList = *list
+	gas, err := s.EthClient.EstimateGas(newctx, callmsg)
+	if err != nil {
+		return nil, 0, err
 	}
 
 	// Add extra 21000 to prevent the out of gas error

@@ -146,7 +146,7 @@ func New(basectx context.Context, metric *Metrics, conf *config.Config) (*Submit
 
 	minInterval, err := time.ParseDuration(conf.Submitter.Params.MinInterval)
 	if err != nil {
-		return nil, fmt.Errorf("Invalid MinInterval param: %s", conf.Submitter.Params.MinInterval)
+		return nil, fmt.Errorf("invalid MinInterval param: %s", conf.Submitter.Params.MinInterval)
 	}
 
 	if conf.Submitter.Params.MinEpochLen == 0 {
@@ -260,6 +260,8 @@ func (s *Submitter) saveState() error {
 	if err != nil {
 		return err
 	}
-	defer file.Close()
-	return json.NewEncoder(file).Encode(s.state)
+	if err := json.NewEncoder(file).Encode(s.state); err != nil {
+		return err
+	}
+	return file.Close()
 }

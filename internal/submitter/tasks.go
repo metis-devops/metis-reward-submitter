@@ -109,7 +109,7 @@ func (s *Submitter) newBatch(basectx context.Context) (bool, error) {
 	}
 
 	// get gas limit
-	accessList, gasLimit, err := s.GetAccessList(newctx,
+	accessList, gasLimit, err := s.GetTxParams(newctx,
 		state.MpcAddress, s.params.LockingPoolAddress, txInput)
 	if err != nil {
 		return false, err
