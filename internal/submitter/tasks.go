@@ -109,21 +109,19 @@ func (s *Submitter) newBatch(basectx context.Context) (bool, error) {
 	}
 
 	// get gas limit
-	accessList, gasLimit, err := s.GetTxParams(newctx,
+	gasLimit, err := s.EstimateTxGas(newctx,
 		state.MpcAddress, s.params.LockingPoolAddress, txInput)
 	if err != nil {
 		return false, err
 	}
 	tx := types.NewTx(&types.DynamicFeeTx{
-		ChainID:    s.params.EthChainId,
-		Nonce:      state.MpcNonce,
-		GasTipCap:  gasPriceTip,
-		GasFeeCap:  gasPriceCap,
-		Gas:        gasLimit,
-		To:         &s.params.LockingPoolAddress,
-		Value:      new(big.Int),
-		AccessList: *accessList,
-		Data:       txInput,
+		ChainID:   s.params.EthChainId,
+		Nonce:     state.MpcNonce,
+		GasTipCap: gasPriceTip,
+		GasFeeCap: gasPriceCap,
+		Gas:       gasLimit,
+		To:        &s.params.LockingPoolAddress,
+		Data:      txInput,
 	})
 
 	slog.Debug("Batch tx info", "nonce", state.MpcNonce, "gasTipCap", gasPriceTip, "gasFeeCap",

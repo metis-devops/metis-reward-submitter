@@ -11,8 +11,6 @@ import (
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethclient/gethclient"
 	"github.com/metis-devops/metis-reward-submitter/internal/utils"
 	"golang.org/x/sync/errgroup"
 )
@@ -181,7 +179,7 @@ func (s *Submitter) GetGasParams(basectx context.Context) (tip, cap *big.Int, er
 	return
 }
 
-func (s *Submitter) GetTxParams(basectx context.Context, from, to common.Address, input []byte) (*types.AccessList, uint64, error) {
+func (s *Submitter) EstimateTxGas(basectx context.Context, from, to common.Address, input []byte) (uint64, error) {
 	newctx, canel := context.WithTimeout(basectx, time.Second*5)
 	defer canel()
 
@@ -191,19 +189,11 @@ func (s *Submitter) GetTxParams(basectx context.Context, from, to common.Address
 		Data: input,
 	}
 
-	list, _, _, err := gethclient.New(s.EthClient.Client()).CreateAccessList(newctx, callmsg)
-	if err != nil || list == nil {
-		// ignore the error from CreateAccessList due to the AccessList is not required and not important
-		slog.Warn("failed to get access list", "err", err.Error())
-		list = &types.AccessList{}
-	}
-
-	callmsg.AccessList = *list
 	gas, err := s.EthClient.EstimateGas(newctx, callmsg)
 	if err != nil {
-		return nil, 0, err
+		return 0, err
 	}
 
 	// Add extra 21000 to prevent the out of gas error
-	return list, gas + 21000, err
+	return gas + 21000, err
 }
