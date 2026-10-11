@@ -182,8 +182,8 @@ func (s *Submitter) withSignature(basectx context.Context) (bool, error) {
 	newctx, cancel := context.WithTimeout(basectx, time.Second*15)
 	defer cancel()
 
-	if time.Since(s.state.UpdatedAt) > time.Minute*3 {
-		slog.Warn("Discard due to no new signatgure for long", "signId", s.state.SignId, "batch", s.state.BatchId)
+	if time.Since(s.state.UpdatedAt) > time.Minute*10 {
+		slog.Warn("Discard due to no new signatgure for long time", "signId", s.state.SignId, "batch", s.state.BatchId)
 		s.Metric.MpcErrs.Inc()
 
 		s.state.Status = StatusIdle

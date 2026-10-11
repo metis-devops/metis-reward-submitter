@@ -217,7 +217,7 @@ func (s *Submitter) Start(basectx context.Context) {
 				if done {
 					timer.Reset(0)
 				} else {
-					timer.Reset(time.Second * 5)
+					timer.Reset(time.Second * 30)
 				}
 			case StatusSigned:
 				_, err := s.submitTx(basectx)
